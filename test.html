@@ -1,0 +1,1173 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gabbi's Mexican Kitchen - Employee Quiz</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+            color: #333;
+        }
+
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+            overflow: hidden;
+        }
+
+        .header {
+            background: linear-gradient(135deg, #1e3c72 0%, #2a5298 100%);
+            color: white;
+            padding: 30px;
+            text-align: center;
+        }
+
+        .header h1 {
+            font-size: 2.5em;
+            margin-bottom: 10px;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+        }
+
+        .header p {
+            font-size: 1.1em;
+            opacity: 0.9;
+        }
+
+        .controls {
+            padding: 25px 30px;
+            background: #f8f9fa;
+            border-bottom: 2px solid #e9ecef;
+            display: flex;
+            flex-wrap: wrap;
+            gap: 15px;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .section-filter {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+            flex: 1;
+        }
+
+        .filter-btn {
+            padding: 10px 20px;
+            border: 2px solid #667eea;
+            background: white;
+            color: #667eea;
+            border-radius: 25px;
+            cursor: pointer;
+            font-size: 0.9em;
+            font-weight: 600;
+            transition: all 0.3s ease;
+        }
+
+        .filter-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(102, 126, 234, 0.3);
+        }
+
+        .filter-btn.active {
+            background: #667eea;
+            color: white;
+        }
+
+        .progress-container {
+            width: 100%;
+            margin-top: 15px;
+        }
+
+        .progress-bar {
+            width: 100%;
+            height: 8px;
+            background: #e9ecef;
+            border-radius: 10px;
+            overflow: hidden;
+        }
+
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #667eea 0%, #764ba2 100%);
+            transition: width 0.3s ease;
+            border-radius: 10px;
+        }
+
+        .progress-text {
+            text-align: center;
+            margin-top: 8px;
+            font-size: 0.9em;
+            color: #666;
+            font-weight: 600;
+        }
+
+        .quiz-container {
+            padding: 40px 30px;
+        }
+
+        .question-card {
+            background: white;
+            border: 2px solid #e9ecef;
+            border-radius: 15px;
+            padding: 30px;
+            margin-bottom: 20px;
+            transition: all 0.3s ease;
+        }
+
+        .question-card:hover {
+            box-shadow: 0 8px 25px rgba(0,0,0,0.1);
+            transform: translateY(-2px);
+        }
+
+        .question-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: 20px;
+        }
+
+        .question-number {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 8px 16px;
+            border-radius: 20px;
+            font-weight: 700;
+            font-size: 0.9em;
+        }
+
+        .section-badge {
+            background: #e9ecef;
+            color: #495057;
+            padding: 8px 16px;
+            border-radius: 20px;
+            font-size: 0.85em;
+            font-weight: 600;
+        }
+
+        .question-text {
+            font-size: 1.2em;
+            font-weight: 600;
+            color: #2c3e50;
+            margin-bottom: 20px;
+            line-height: 1.6;
+        }
+
+        .answer-input {
+            width: 100%;
+            padding: 15px;
+            border: 2px solid #e9ecef;
+            border-radius: 10px;
+            font-size: 1em;
+            font-family: inherit;
+            transition: all 0.3s ease;
+            resize: vertical;
+            min-height: 100px;
+        }
+
+        .answer-input:focus {
+            outline: none;
+            border-color: #667eea;
+            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+        }
+
+        .answer-buttons {
+            display: flex;
+            gap: 10px;
+            margin-top: 15px;
+        }
+
+        .btn {
+            padding: 12px 24px;
+            border: none;
+            border-radius: 8px;
+            font-size: 1em;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .btn-show {
+            background: #667eea;
+            color: white;
+        }
+
+        .btn-show:hover {
+            background: #5568d3;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(102, 126, 234, 0.4);
+        }
+
+        .btn-hide {
+            background: #6c757d;
+            color: white;
+        }
+
+        .btn-hide:hover {
+            background: #5a6268;
+        }
+
+        .correct-answer {
+            margin-top: 15px;
+            padding: 20px;
+            background: #d4edda;
+            border: 2px solid #28a745;
+            border-radius: 10px;
+            color: #155724;
+            line-height: 1.8;
+            font-size: 1em;
+        }
+
+        .correct-answer strong {
+            color: #0d4420;
+        }
+
+        .stats-container {
+            padding: 30px;
+            background: #f8f9fa;
+            border-top: 2px solid #e9ecef;
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 20px;
+        }
+
+        .stat-card {
+            background: white;
+            padding: 20px;
+            border-radius: 12px;
+            text-align: center;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+        }
+
+        .stat-number {
+            font-size: 2.5em;
+            font-weight: 700;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .stat-label {
+            font-size: 0.9em;
+            color: #666;
+            margin-top: 5px;
+            font-weight: 600;
+        }
+
+        .reset-btn {
+            position: fixed;
+            bottom: 30px;
+            right: 30px;
+            background: #dc3545;
+            color: white;
+            border: none;
+            padding: 15px 30px;
+            border-radius: 50px;
+            font-size: 1em;
+            font-weight: 600;
+            cursor: pointer;
+            box-shadow: 0 8px 20px rgba(220, 53, 69, 0.3);
+            transition: all 0.3s ease;
+            z-index: 1000;
+        }
+
+        .reset-btn:hover {
+            background: #c82333;
+            transform: translateY(-3px);
+            box-shadow: 0 12px 25px rgba(220, 53, 69, 0.4);
+        }
+
+        @media (max-width: 768px) {
+            .header h1 {
+                font-size: 1.8em;
+            }
+
+            .controls {
+                padding: 20px;
+            }
+
+            .section-filter {
+                width: 100%;
+            }
+
+            .filter-btn {
+                flex: 1;
+                min-width: 120px;
+            }
+
+            .quiz-container {
+                padding: 20px 15px;
+            }
+
+            .question-card {
+                padding: 20px;
+            }
+
+            .stats-container {
+                grid-template-columns: 1fr;
+            }
+
+            .reset-btn {
+                bottom: 20px;
+                right: 20px;
+                padding: 12px 24px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🌮 Gabbi's Mexican Kitchen</h1>
+            <p>Employee Training Quiz - 2025</p>
+        </div>
+
+        <div class="controls">
+            <div class="section-filter">
+                <button class="filter-btn active" data-section="all">All Questions</button>
+                <button class="filter-btn" data-section="food">Food Knowledge</button>
+                <button class="filter-btn" data-section="bar">Bar Knowledge</button>
+                <button class="filter-btn" data-section="prep">Prep & Ingredients</button>
+            </div>
+            <div class="progress-container">
+                <div class="progress-bar">
+                    <div class="progress-fill" id="progressFill"></div>
+                </div>
+                <div class="progress-text" id="progressText">0 of 96 questions answered</div>
+            </div>
+        </div>
+
+        <div class="quiz-container" id="quizContainer"></div>
+
+        <div class="stats-container">
+            <div class="stat-card">
+                <div class="stat-number" id="totalQuestions">96</div>
+                <div class="stat-label">Total Questions</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-number" id="answeredCount">0</div>
+                <div class="stat-label">Answered</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-number" id="percentComplete">0%</div>
+                <div class="stat-label">Complete</div>
+            </div>
+        </div>
+    </div>
+
+    <button class="reset-btn" onclick="resetProgress()">🔄 Reset Progress</button>
+
+    <script>
+        const quizData = [
+            // Section 1: Food Knowledge - Entradas
+            {
+                section: "food",
+                category: "Entradas (Starters)",
+                number: 1,
+                question: "Describe the Guacamole & Chips:",
+                answer: "Avocado, serrano chile, lime, queso fresco, and radish. Served with 1 side of house salsa and up to 1 chip refill"
+            },
+            {
+                section: "food",
+                category: "Entradas (Starters)",
+                number: 2,
+                question: "Describe the Birria Quesadilla:",
+                answer: "Braised beef cheek, oaxaca cheese, escabeche, tomatillo crudo"
+            },
+            {
+                section: "food",
+                category: "Entradas (Starters)",
+                number: 3,
+                question: "Describe the Mole Tostaditas:",
+                answer: "Shredded jidori chicken, mole, cabbage, crema, queso fresco"
+            },
+            {
+                section: "food",
+                category: "Entradas (Starters)",
+                number: 4,
+                question: "Describe the Flautas de Pollo Tinga:",
+                answer: "Chicken tinga, red cabbage, escabeche, crema, avocado mousse"
+            },
+            {
+                section: "food",
+                category: "Entradas (Starters)",
+                number: 5,
+                question: "Describe the Quesillo en Salsa Verde:",
+                answer: "Oaxacan mozzarella in panko, green chorizo, chicharrones, escabeche, crema, served with choice of tortillas"
+            },
+            {
+                section: "food",
+                category: "Entradas (Starters)",
+                number: 6,
+                question: "Describe the Queso Fundido con Chorizo:",
+                answer: "Oaxacan cheese, shiitake mushroom, red chorizo, tomatillo crudo, escabeche, served with choice of tortillas"
+            },
+            {
+                section: "food",
+                category: "Entradas (Starters)",
+                number: 7,
+                question: "Describe the Tlacoyo de Aguacate:",
+                answer: "Oval masa cake, black beans, avocado, persian cucumber, tomatillo crudo, queso fresco"
+            },
+            {
+                section: "food",
+                category: "Entradas (Starters)",
+                number: 8,
+                question: "Describe the Empanadas de Viento:",
+                answer: "Inflated tortilla, shrimp, nopales, green chorizo, crema, queso fresco, roasted tomatillo salsa"
+            },
+            {
+                section: "food",
+                category: "Entradas (Starters)",
+                number: 9,
+                question: "Describe the Gorditas Al Pastor:",
+                answer: "Crispy masa cake, kurobuta pork belly, serrano-cilantro salsa, pineapple, onions, watercress, queso fresco"
+            },
+            // Ensaladas + Verduras
+            {
+                section: "food",
+                category: "Ensaladas + Verduras",
+                number: 10,
+                question: "Describe the Ensalada de Casa:",
+                answer: "Spring mix, cucumbers, grape tomatoes, queso fresco, toasted pepitas, passionfruit dressing"
+            },
+            {
+                section: "food",
+                category: "Ensaladas + Verduras",
+                number: 11,
+                question: "Describe the Ensalada Caesar:",
+                answer: "Baby gem lettuce, parmesan cheese, chicharron + pepita crumble, serrano caesar dressing"
+            },
+            {
+                section: "food",
+                category: "Ensaladas + Verduras",
+                number: 12,
+                question: "Describe the Ensalada Primavera:",
+                answer: "Spring mix, jicama, apples, avocado, mint, candied pecans, goat cheese, lime vinaigrette"
+            },
+            {
+                section: "food",
+                category: "Ensaladas + Verduras",
+                number: 13,
+                question: "Describe the Yucca Fries:",
+                answer: "Fried yucca fries, served with chipotle aioli"
+            },
+            {
+                section: "food",
+                category: "Ensaladas + Verduras",
+                number: 14,
+                question: "Describe the Esquites:",
+                answer: "Grilled corn, cotija, chipotle crema, cilantro, grilled lime"
+            },
+            // Tacos
+            {
+                section: "food",
+                category: "Tacos",
+                number: 15,
+                question: "Describe the Hongos Tacos:",
+                answer: "Shiitake + maitake hongos, rajas, red onion, ejotes, oaxaca, morita salsa"
+            },
+            {
+                section: "food",
+                category: "Tacos",
+                number: 16,
+                question: "Describe the Pollo Tacos:",
+                answer: "Grilled achiote chicken, cabbage, queso fresco, chipotle aioli, pico de gallo"
+            },
+            {
+                section: "food",
+                category: "Tacos",
+                number: 17,
+                question: "Describe the Camarones Tacos:",
+                answer: "Shrimp, oaxaca cheese, cabbage, pico de gallo, serrano aioli"
+            },
+            {
+                section: "food",
+                category: "Tacos",
+                number: 18,
+                question: "Describe the Alhambre Tacos:",
+                answer: "Grilled carne asada, bell peppers, oaxaca cheese, onions, chimichurri"
+            },
+            {
+                section: "food",
+                category: "Tacos",
+                number: 19,
+                question: "Describe the Puebla Tacos:",
+                answer: "Grilled carne asada, applewood smoked bacon, portuguese sausage, onions, cheese, morita salsa"
+            },
+            {
+                section: "food",
+                category: "Tacos",
+                number: 20,
+                question: "Describe the Carnitas Tacos:",
+                answer: "Carnitas, pico de gallo, avocado, house salsa"
+            },
+            // Platos Fuertes
+            {
+                section: "food",
+                category: "Platos Fuertes",
+                number: 21,
+                question: "Describe the Pozole Verde:",
+                answer: "Pescado, littleneck clams, shrimp, hominy, arugula, radish, onion, avocado, lime sea salt, cilantro"
+            },
+            {
+                section: "food",
+                category: "Platos Fuertes",
+                number: 22,
+                question: "Describe the Pez del Dia:",
+                answer: "Barramundi, confit potatoes, green beans, roasted maitake mushrooms, grilled tomatillo sauce"
+            },
+            {
+                section: "food",
+                category: "Platos Fuertes",
+                number: 23,
+                question: "Describe the Camarones en Mole Verde:",
+                answer: "Grilled shrimp, garlic rice, bell peppers, confit potatoes, red onions, mole verde"
+            },
+            {
+                section: "food",
+                category: "Platos Fuertes",
+                number: 24,
+                question: "Describe the Enchiladas de Calabaza:",
+                answer: "Roasted butternut squash, corn, rajas, oaxacan cheese, chipotle sauce, crema"
+            },
+            {
+                section: "food",
+                category: "Platos Fuertes",
+                number: 25,
+                question: "Describe the Enchiladas Suizas:",
+                answer: "Nixtamal tortillas, jidori chicken, cheese, roasted tomatillo sauce, garlic rice, frijoles negros, crema, queso fresco"
+            },
+            {
+                section: "food",
+                category: "Platos Fuertes",
+                number: 26,
+                question: "Describe the Mole Coloradito Enchiladas:",
+                answer: "Nixtamal tortillas, jidori chicken, mole, cabbage, escabeche, garlic rice, plantains, crema"
+            },
+            {
+                section: "food",
+                category: "Platos Fuertes",
+                number: 27,
+                question: "Describe the Enchiladas de Camarones:",
+                answer: "Flour tortillas, shrimp, spinach, cheese, creamy poblano sauce, garlic rice, frijoles negros, queso fresco, crema"
+            },
+            {
+                section: "food",
+                category: "Platos Fuertes",
+                number: 28,
+                question: "Describe the Eduardo Burrito:",
+                answer: "Grilled adobo steak, black beans, garlic white rice, pico de gallo, avocado, crema, cheese, guajillo sauce"
+            },
+            {
+                section: "food",
+                category: "Platos Fuertes",
+                number: 29,
+                question: "Describe the Carnitas Norteñas:",
+                answer: "Braised berkshire pork, pico, guacamole, chicharrones, house salsa, garlic rice, frijoles negros, served with choice of tortillas"
+            },
+            {
+                section: "food",
+                category: "Platos Fuertes",
+                number: 30,
+                question: "Describe the Arrachera:",
+                answer: "8 oz. prime skirt steak, cebolla asada, nopales, mexican corn, escabeche, served with choice of tortillas"
+            },
+            // Desserts
+            {
+                section: "food",
+                category: "Desserts",
+                number: 31,
+                question: "Describe the Chocolate Churros:",
+                answer: "Round donut shaped churros, vanilla bean or dulce de leche ice cream, cajeta sauce"
+            },
+            {
+                section: "food",
+                category: "Desserts",
+                number: 32,
+                question: "Describe the Classic Churros:",
+                answer: "5 cinnamon sugar straight churros served with chocolate sauce, cajeta sauce"
+            },
+            {
+                section: "food",
+                category: "Desserts",
+                number: 33,
+                question: "Describe the Chocolate Mousse:",
+                answer: "Whipped cream, pepita brittle, cacao nibs, chocolate abuelita"
+            },
+            {
+                section: "food",
+                category: "Desserts",
+                number: 34,
+                question: "Describe the Capirotada:",
+                answer: "Banana bread pudding, cajeta, toasted coconut, vanilla bean gelato"
+            },
+            {
+                section: "food",
+                category: "Desserts",
+                number: 35,
+                question: "Describe the Tres Leches:",
+                answer: "Meyer Lemon & Blackberry, blackberry compote, Meyer lemon curd"
+            },
+            // Kids Menu
+            {
+                section: "food",
+                category: "Kids Menu",
+                number: 36,
+                question: "Describe the Burrito (Kids):",
+                answer: "Black bean + cheese yucca fries"
+            },
+            {
+                section: "food",
+                category: "Kids Menu",
+                number: 37,
+                question: "Describe the Carnitas Taco (Kids):",
+                answer: "Flour tortilla, black beans + rice"
+            },
+            {
+                section: "food",
+                category: "Kids Menu",
+                number: 38,
+                question: "Describe the Quesadillas (Kids):",
+                answer: "Choice of either cheese, chicken or carne asada, black beans + rice"
+            },
+            // Section 2: Bar Knowledge - Margaritas
+            {
+                section: "bar",
+                category: "Margaritas",
+                number: 39,
+                question: "Describe the Gabbi's House Margarita:",
+                answer: "Tradicional blanco, lime, agave"
+            },
+            {
+                section: "bar",
+                category: "Margaritas",
+                number: 40,
+                question: "Describe the Maracuya Margarita:",
+                answer: "Celaya blanco, passion fruit, pineapple, lime, agave, chili salt"
+            },
+            {
+                section: "bar",
+                category: "Margaritas",
+                number: 41,
+                question: "Describe the Sour Orange Margarita:",
+                answer: "Celaya blanco, alma finca, orange, agave, lime, sour salt"
+            },
+            {
+                section: "bar",
+                category: "Margaritas",
+                number: 42,
+                question: "Describe the Sandia Margarita (seasonal):",
+                answer: "Nosotros blanco, black diamond watermelon, lime, serrano, chile-lime salt"
+            },
+            {
+                section: "bar",
+                category: "Margaritas",
+                number: 43,
+                question: "Describe the Jalapeño Pepino Margarita:",
+                answer: "Cucumber infused tradicional blanco, jalapeño bitters, lime, agave, chili salt"
+            },
+            {
+                section: "bar",
+                category: "Margaritas",
+                number: 44,
+                question: "Describe the Coco Margarita:",
+                answer: "Cazcabel coconut tequila, lime, agave, coconut salt"
+            },
+            {
+                section: "bar",
+                category: "Margaritas",
+                number: 45,
+                question: "Describe the Gabbi's House Mezcalita:",
+                answer: "La tierra de acre, lime, agave, rocks"
+            },
+            // Cocteles
+            {
+                section: "bar",
+                category: "Cocteles",
+                number: 46,
+                question: "Describe the La Paloma:",
+                answer: "Tradicional blanco, grapefruit, hibiscus agave, lime, soda"
+            },
+            {
+                section: "bar",
+                category: "Cocteles",
+                number: 47,
+                question: "Describe the El Vaquero:",
+                answer: "Abasolo whiskey, la tierra de acre mezcal, agave, angostura & orange bitters"
+            },
+            {
+                section: "bar",
+                category: "Cocteles",
+                number: 48,
+                question: "Describe the Whiskey Mixiego (EL BRAVO):",
+                answer: "Sagamore rye, blackberry, lemon, mint, jamaica agave"
+            },
+            {
+                section: "bar",
+                category: "Cocteles",
+                number: 49,
+                question: "Describe the Tia Mia:",
+                answer: "La tierra de acre mezcal, flor de cana rum, alma finca, pineapple, lime"
+            },
+            {
+                section: "bar",
+                category: "Cocteles",
+                number: 50,
+                question: "Describe the Tamarindo con Chile:",
+                answer: "La tierra de acre mezcal, tamarindo, lime, serrano bitters"
+            },
+            {
+                section: "bar",
+                category: "Cocteles",
+                number: 51,
+                question: "Describe the Juanita Bonita:",
+                answer: "Golden eagle vodka, pitaya syrup, lemon, agave, foam"
+            },
+            {
+                section: "bar",
+                category: "Cocteles",
+                number: 52,
+                question: "Describe the Sangria:",
+                answer: "White or red, ed's secret recipe"
+            },
+            // Beer & Bar Info
+            {
+                section: "bar",
+                category: "Beers",
+                number: 55,
+                question: "Name our beers and style:",
+                answer: "Calidad — Mexican Lager, Skyduster — Citrus Wit, Red Seal — Red Lager, North Coast Brewing Co. — Pacific Magic West Coast IPA, Harland Brewing Co. — Hazy IPA, Trumer Brewery — Pilsner, Estrella Galicia — Non-Alcoholic"
+            },
+            {
+                section: "bar",
+                category: "Bar Information",
+                number: 56,
+                question: "Where can you find info and updates about the bar?",
+                answer: "In the bar manual next to the Bar POS"
+            },
+            {
+                section: "bar",
+                category: "Bar Information",
+                number: 57,
+                question: "What is our house tequila, bourbon/whiskey, gin, vodka, rum?",
+                answer: "Vodka – Outfitters, Gin - Outfitters, Bourbon – Buffalo Trace, Rum – Don Q, Tequila – Tradicional Blanco, Mezcal – Tierra De Acre"
+            },
+            {
+                section: "bar",
+                category: "Bar Information",
+                number: 58,
+                question: "Do we have frozen or blended margaritas?",
+                answer: "NO"
+            },
+            {
+                section: "bar",
+                category: "Bar Information",
+                number: 59,
+                question: "What is the proper way to present a bottle of wine on the table, step by step process?",
+                answer: "(Answer to be filled in based on restaurant procedures)"
+            },
+            {
+                section: "bar",
+                category: "Bar Information",
+                number: 60,
+                question: "What are our mocktail options?",
+                answer: "Guava lime, Mango, Pomegranate"
+            },
+            {
+                section: "bar",
+                category: "Bar Information",
+                number: 61,
+                question: "What are our non-alcoholic drink options?",
+                answer: "Coke, lemonade, Dr Pepper, ice tea, Arnold Palmer"
+            },
+            // Section 3: Prep, Ingredients, & Techniques
+            {
+                section: "prep",
+                category: "Prep & Ingredients",
+                number: 62,
+                question: "Where is our coffee from?",
+                answer: "Guatemala and Oaxaca — Kean Coffee"
+            },
+            {
+                section: "prep",
+                category: "Prep & Ingredients",
+                number: 63,
+                question: "What is Al pastor?",
+                answer: "A marinade made of dry chile California, Chipotle chile pasilla, spices, onions, and garlic"
+            },
+            {
+                section: "prep",
+                category: "Prep & Ingredients",
+                number: 64,
+                question: "What is brining?",
+                answer: "Technique where we soak the meat in salt water to maintain its moisture"
+            },
+            {
+                section: "prep",
+                category: "Prep & Ingredients",
+                number: 65,
+                question: "What is Nixtamal?",
+                answer: "Corn that has been soaked in slate lime"
+            },
+            {
+                section: "prep",
+                category: "Prep & Ingredients",
+                number: 66,
+                question: "What proteins can be added to salads?",
+                answer: "Chicken, steak, and shrimp"
+            },
+            {
+                section: "prep",
+                category: "Prep & Ingredients",
+                number: 67,
+                question: "Do the carnitas have dairy?",
+                answer: "Yes"
+            },
+            {
+                section: "prep",
+                category: "Prep & Ingredients",
+                number: 68,
+                question: "What are the different types of cheeses do we have?",
+                answer: "Jack, Oaxaca, goat, queso fresco, cotija"
+            },
+            {
+                section: "prep",
+                category: "Prep & Ingredients",
+                number: 69,
+                question: "What would you recommend to a vegan or vegetarian on our menu?",
+                answer: "Tlacoyo, veggie tacos, ensaladas, flor de enchilada quesadillas - you can take the dairy out of all of them. You can also suggest removing the meat from the enchiladas and do cheese only."
+            },
+            {
+                section: "prep",
+                category: "Prep & Ingredients",
+                number: 70,
+                question: "Describe the Esquites?",
+                answer: "Grilled corn, cotija, chipotle crema, grilled lime"
+            },
+            {
+                section: "prep",
+                category: "Prep & Ingredients",
+                number: 71,
+                question: "What is duck confit?",
+                answer: "Duck cooked in its own fat for 13 hours @ 190 degrees"
+            },
+            {
+                section: "prep",
+                category: "Prep & Ingredients",
+                number: 72,
+                question: "What is Jidori Chicken?",
+                answer: "All natural, free range"
+            },
+            {
+                section: "prep",
+                category: "Prep & Ingredients",
+                number: 73,
+                question: "What is jicama?",
+                answer: "Mexican root, similar to a water chestnut"
+            },
+            {
+                section: "prep",
+                category: "Prep & Ingredients",
+                number: 74,
+                question: "What is achiote?",
+                answer: "Annatto seed paste, used to marinade our cochinita and pollo achiote"
+            },
+            {
+                section: "prep",
+                category: "Prep & Ingredients",
+                number: 75,
+                question: "What is hominy?",
+                answer: "Dried maze kernels"
+            },
+            {
+                section: "prep",
+                category: "Prep & Ingredients",
+                number: 76,
+                question: "Which of our cheeses are pasteurized?",
+                answer: "All"
+            },
+            {
+                section: "prep",
+                category: "Prep & Ingredients",
+                number: 77,
+                question: "How many ounces of meat are in the Arrachera? What is the cut of meat?",
+                answer: "8oz prime skirt steak"
+            },
+            {
+                section: "prep",
+                category: "Prep & Ingredients",
+                number: 78,
+                question: "What is the correct name for our green sauce?",
+                answer: "Grilled tomatillo molcajete"
+            },
+            {
+                section: "prep",
+                category: "Prep & Ingredients",
+                number: 79,
+                question: "Describe a churro?",
+                answer: "Mexican doughnut dusted with cinnamon sugar"
+            },
+            {
+                section: "prep",
+                category: "Prep & Ingredients",
+                number: 80,
+                question: "What is escabeche?",
+                answer: "Pickling with vinegar (cebolla) red onions"
+            },
+            {
+                section: "prep",
+                category: "Prep & Ingredients",
+                number: 81,
+                question: "What is panko?",
+                answer: "Japanese bread crumbs"
+            },
+            {
+                section: "prep",
+                category: "Prep & Ingredients",
+                number: 82,
+                question: "Name two items on our menu, of which we use lard?",
+                answer: "Carnitas and flour tortillas"
+            },
+            {
+                section: "prep",
+                category: "Prep & Ingredients",
+                number: 83,
+                question: "What is Berkshire?",
+                answer: "A breed of pig. Black hog with fine marbling and rich flavor"
+            },
+            {
+                section: "prep",
+                category: "Prep & Ingredients",
+                number: 84,
+                question: "What is gluten-free?",
+                answer: "Food that does not consist of wheat, barley, rye and triticale (hybrid), or flour"
+            },
+            {
+                section: "prep",
+                category: "Prep & Ingredients",
+                number: 85,
+                question: "What does confit mean?",
+                answer: "Process how we submerge in fat and cook in low temperature for over 14 hours"
+            },
+            {
+                section: "prep",
+                category: "Prep & Ingredients",
+                number: 86,
+                question: "What is the difference between enmolada and enchilada?",
+                answer: "Enmolada is open flat face totilla submerged in the sauce. Enchilada is rolled up, topped with sauce."
+            },
+            {
+                section: "prep",
+                category: "Prep & Ingredients",
+                number: 87,
+                question: "Which of our beans and rice is vegan?",
+                answer: "White rice and black beans"
+            },
+            {
+                section: "prep",
+                category: "Prep & Ingredients",
+                number: 88,
+                question: "What is huitlacoche?",
+                answer: "A truffle mushroom that grows on corn."
+            },
+            {
+                section: "prep",
+                category: "Prep & Ingredients",
+                number: 89,
+                question: "What is Kurobuta?",
+                answer: "Black hog with fine marbling and rich flavor"
+            },
+            {
+                section: "prep",
+                category: "Prep & Ingredients",
+                number: 90,
+                question: "What is Cajeta?",
+                answer: "Mexican caramel sauce made from goat's milk and sugar"
+            },
+            {
+                section: "prep",
+                category: "Prep & Ingredients",
+                number: 91,
+                question: "What does the word 'mole' mean?",
+                answer: "Concoction"
+            },
+            {
+                section: "prep",
+                category: "Prep & Ingredients",
+                number: 92,
+                question: "What chocolate do we use for our chocolate churros?",
+                answer: "Valrohna Chili sauce"
+            },
+            {
+                section: "prep",
+                category: "Prep & Ingredients",
+                number: 93,
+                question: "Where did the Chile en Nogada originate from?",
+                answer: "Puebla, Mexico"
+            },
+            {
+                section: "prep",
+                category: "Prep & Ingredients",
+                number: 94,
+                question: "What are our ice creams?",
+                answer: "Vanilla Bean, Toasted Coconut"
+            },
+            {
+                section: "prep",
+                category: "Prep & Ingredients",
+                number: 95,
+                question: "What size shrimp do we use in the Mole Verde?",
+                answer: "U/12 under 12 per pound"
+            },
+            {
+                section: "prep",
+                category: "Prep & Ingredients",
+                number: 96,
+                question: "In detail, what are the cooking procedures for the pork belly?",
+                answer: "24 hour Brine, rubbed in our spices"
+            }
+        ];
+
+        let userAnswers = {};
+        let currentFilter = 'all';
+
+        // Load saved progress from localStorage
+        function loadProgress() {
+            const saved = localStorage.getItem('gabbiQuizProgress');
+            if (saved) {
+                userAnswers = JSON.parse(saved);
+            }
+        }
+
+        // Save progress to localStorage
+        function saveProgress() {
+            localStorage.setItem('gabbiQuizProgress', JSON.stringify(userAnswers));
+            updateStats();
+        }
+
+        // Initialize quiz
+        function initQuiz() {
+            loadProgress();
+            renderQuiz();
+            updateStats();
+            setupFilters();
+        }
+
+        // Setup filter buttons
+        function setupFilters() {
+            const filterButtons = document.querySelectorAll('.filter-btn');
+            filterButtons.forEach(btn => {
+                btn.addEventListener('click', function() {
+                    filterButtons.forEach(b => b.classList.remove('active'));
+                    this.classList.add('active');
+                    currentFilter = this.dataset.section;
+                    renderQuiz();
+                });
+            });
+        }
+
+        // Filter questions based on current filter
+        function getFilteredQuestions() {
+            if (currentFilter === 'all') {
+                return quizData;
+            }
+            return quizData.filter(q => q.section === currentFilter);
+        }
+
+        // Render quiz questions
+        function renderQuiz() {
+            const container = document.getElementById('quizContainer');
+            const filteredQuestions = getFilteredQuestions();
+            
+            container.innerHTML = filteredQuestions.map(q => {
+                const questionId = `q${q.number}`;
+                const isAnswered = userAnswers[questionId] && userAnswers[questionId].answered;
+                const showAnswer = userAnswers[questionId] && userAnswers[questionId].showAnswer;
+                
+                return `
+                    <div class="question-card">
+                        <div class="question-header">
+                            <span class="question-number">Question ${q.number}</span>
+                            <span class="section-badge">${q.category}</span>
+                        </div>
+                        <div class="question-text">${q.question}</div>
+                        <textarea 
+                            class="answer-input" 
+                            id="${questionId}" 
+                            placeholder="Type your answer here..."
+                            oninput="handleInput('${questionId}')"
+                        >${userAnswers[questionId] ? userAnswers[questionId].text : ''}</textarea>
+                        <div class="answer-buttons">
+                            <button class="btn btn-show" onclick="toggleAnswer('${questionId}')">
+                                ${showAnswer ? 'Hide' : 'Show'} Answer
+                            </button>
+                        </div>
+                        ${showAnswer ? `<div class="correct-answer"><strong>Correct Answer:</strong><br>${q.answer}</div>` : ''}
+                    </div>
+                `;
+            }).join('');
+        }
+
+        // Handle input changes
+        function handleInput(questionId) {
+            const input = document.getElementById(questionId);
+            if (!userAnswers[questionId]) {
+                userAnswers[questionId] = {};
+            }
+            userAnswers[questionId].text = input.value;
+            userAnswers[questionId].answered = input.value.trim().length > 0;
+            saveProgress();
+        }
+
+        // Toggle answer visibility
+        function toggleAnswer(questionId) {
+            if (!userAnswers[questionId]) {
+                userAnswers[questionId] = { text: '', answered: false };
+            }
+            userAnswers[questionId].showAnswer = !userAnswers[questionId].showAnswer;
+            saveProgress();
+            renderQuiz();
+        }
+
+        // Update statistics
+        function updateStats() {
+            const totalQuestions = quizData.length;
+            const answeredCount = Object.values(userAnswers).filter(a => a.answered).length;
+            const percentComplete = Math.round((answeredCount / totalQuestions) * 100);
+
+            document.getElementById('totalQuestions').textContent = totalQuestions;
+            document.getElementById('answeredCount').textContent = answeredCount;
+            document.getElementById('percentComplete').textContent = percentComplete + '%';
+            document.getElementById('progressFill').style.width = percentComplete + '%';
+            document.getElementById('progressText').textContent = `${answeredCount} of ${totalQuestions} questions answered`;
+        }
+
+        // Reset all progress
+        function resetProgress() {
+            if (confirm('Are you sure you want to reset all your progress? This cannot be undone.')) {
+                localStorage.removeItem('gabbiQuizProgress');
+                userAnswers = {};
+                renderQuiz();
+                updateStats();
+            }
+        }
+
+        // Initialize on page load
+        window.addEventListener('DOMContentLoaded', initQuiz);
+    </script>
+</body>
+</html>
