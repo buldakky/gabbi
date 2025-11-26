@@ -251,6 +251,57 @@
             color: rgba(255,255,255,0.7);
         }
 
+        .hint-section {
+            margin-top: 20px;
+            text-align: center;
+        }
+
+        .hint-btn {
+            padding: 10px 25px;
+            background: #ffc107;
+            color: #333;
+            border: none;
+            border-radius: 25px;
+            font-size: 0.95em;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .hint-btn:hover {
+            background: #e0a800;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(255, 193, 7, 0.4);
+        }
+
+        .hint-text {
+            margin-top: 15px;
+            padding: 15px 20px;
+            background: #fff3cd;
+            border: 2px solid #ffc107;
+            border-radius: 10px;
+            color: #856404;
+            font-size: 1.1em;
+            font-weight: 600;
+            display: none;
+        }
+
+        .hint-text.show {
+            display: block;
+            animation: fadeIn 0.3s ease;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(-10px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
         .navigation {
             display: flex;
             justify-content: center;
@@ -475,6 +526,10 @@
                     <div class="card-category" id="cardCategoryFront">Category</div>
                     <div class="card-content">
                         <div class="question-text" id="questionText">Question will appear here</div>
+                        <div class="hint-section">
+                            <button class="hint-btn" onclick="showHint(event)">💡 Need a Hint?</button>
+                            <div class="hint-text" id="hintText">Hint will appear here</div>
+                        </div>
                     </div>
                     <div class="flip-hint">👆 Click to flip</div>
                 </div>
@@ -502,7 +557,7 @@
         </div>
 
         <div class="keyboard-hint">
-            ⌨️ Keyboard shortcuts: Space = Flip | ← = Previous | → = Next | 1 = Don't Know | 2 = Learning | 3 = Know It
+            ⌨️ Keyboard shortcuts: Space = Flip | ← = Previous | → = Next | H = Hint | 1 = Don't Know | 2 = Learning | 3 = Know It
         </div>
 
         <div class="stats-grid">
@@ -1275,6 +1330,10 @@
             document.getElementById('flashcard').classList.remove('flipped');
             isFlipped = false;
 
+            // Hide hint
+            const hintText = document.getElementById('hintText');
+            hintText.classList.remove('show');
+
             // Update card content
             document.getElementById('cardNumberFront').textContent = card.number;
             document.getElementById('cardNumberBack').textContent = card.number;
@@ -1291,6 +1350,23 @@
             // Update navigation buttons
             document.getElementById('prevBtn').disabled = currentCardIndex === 0;
             document.getElementById('nextBtn').disabled = currentCardIndex === filteredCards.length - 1;
+        }
+
+        // Show hint - extract first ingredient
+        function showHint(event) {
+            event.stopPropagation(); // Prevent card flip
+            
+            const card = filteredCards[currentCardIndex];
+            const hintText = document.getElementById('hintText');
+            
+            // Extract first ingredient (text before first comma or period)
+            let hint = card.answer.split(/[,;.]/)[0].trim();
+            
+            // Capitalize first letter if not already
+            hint = hint.charAt(0).toUpperCase() + hint.slice(1);
+            
+            hintText.textContent = `💡 Hint: ${hint}...`;
+            hintText.classList.add('show');
         }
 
         // Flip card
@@ -1362,18 +1438,22 @@
             document.addEventListener('keydown', (e) => {
                 if (e.target.tagName === 'INPUT' || e.target.tagName === 'TEXTAREA') return;
 
-                switch(e.key) {
+                switch(e.key.toLowerCase()) {
                     case ' ':
                         e.preventDefault();
                         flipCard();
                         break;
-                    case 'ArrowLeft':
+                    case 'arrowleft':
                         e.preventDefault();
                         previousCard();
                         break;
-                    case 'ArrowRight':
+                    case 'arrowright':
                         e.preventDefault();
                         nextCard();
+                        break;
+                    case 'h':
+                        e.preventDefault();
+                        showHint(e);
                         break;
                     case '1':
                         markCard('dont-know');
